@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "dev-test",
+    "start":"babel-node ./server.js",
     "dev-start": "nodemon --exec babel-node ./server.js"
   },
   "repository": {
