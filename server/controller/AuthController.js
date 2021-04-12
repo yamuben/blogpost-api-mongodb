@@ -1,9 +1,59 @@
 import UserData from '../model/UserModel';
 import { generateAuthToken } from "../helpers/token";
 import bcrypt from "bcrypt";
+import EmailHelper from "../helpers/emailTemplate";
+import Response from "../helpers/response";
 
 
 class UserController {
+
+
+    static changePassword = async (req,res)=>{
+
+        let {
+            oldPassword,
+            newPassword,
+            confirmPassword
+        }=req.body;
+
+        const userId = req.body.userId;
+
+        const userDetails = await UserData.findById(userId);
+
+        console.log(userDetails)
+
+        if(bcrypt.compareSync(oldPassword,userDetails.password)){
+
+            if(newPassword === confirmPassword){
+
+
+                const password =  bcrypt.hashSync(newPassword, 10);
+                const passwordChangedTime = Date.now()
+                const userUpdated = await UserData.findByIdAndUpdate(userId,{
+                    password:password,
+                    passwordChangedTime:passwordChangedTime
+                })
+
+
+                return Response.successMessage(res,"success",userUpdated,200)
+            }
+
+            return Response.errorMessage(res, "new Password and Confirm Password not match!", 404)
+
+
+
+          
+
+        }
+
+        return Response.errorMessage(res, "Old  Password provided is invalid", 417)
+
+
+
+
+
+
+    }
 
     static signup = async (req, res) => {
       
@@ -25,8 +75,8 @@ class UserController {
         const isEmailExist = await UserData.findOne({email:email});
 
         if (isEmailExist) {
-            return res.status(409).send({ statu: 409, error: "email is duplicated" })
-        }
+         return   Response.errorMessage(res,"email is duplicated",409)
+                   }
 
         req.body.password= password;
         const data = await UserData.create(req.body);
@@ -35,19 +85,17 @@ class UserController {
 
         if (!data) {
 
-            return res.status(417).json({
-                status: 417,
-                message: "signup failed",
-            })
+            return Response.errorMessage(res,"signup failed", 417)
+
         }
 
         else {
             let { password, ...userData } = data._doc;
-            return res.status(201).json({
-                status: 201,
-                message: "Account created succesfully",
-                data: userData
-            })
+
+            await  EmailHelper.userWelcomeEmail(req,userData);
+
+        return    Response.successMessage(res,"Account created succesfully",userData,201)
+
         }
 
 
@@ -56,7 +104,7 @@ class UserController {
     static signin = async (req, res) => {
         let { email, password } = req.body;
         const isUserExist =await UserData.findOne({email:email});
-console.log(isUserExist)
+// console.log(isUserExist)
         if (isUserExist && bcrypt.compareSync(password, isUserExist._doc.password)) {
 
             const data = isUserExist;
@@ -64,27 +112,18 @@ console.log(isUserExist)
             const token = generateAuthToken({
                 id: data.id,
                 email: data.email,
-                role: data.role
+                role: data.role,
+                passwordChangedTime: data.passwordChangedTime
             });
 
-            let { password, ...userData } = data;
-            return res.status(201).json({
-                status: 201,
-                message: "Account Login succesfully",
-                token,
-                data: userData._doc
-            })
+            let { password, ...userData } = data._doc;
+
+       return     Response.successMessage(res,"login succesfully",{token},201)
+
         }
 
 
-        return res.status(404).json({
-            status: 404,
-            message: "User not found!",
-
-        })
-
-
-
+      return  Response.errorMessage(res,"User not exist",404)
 
     }
 
