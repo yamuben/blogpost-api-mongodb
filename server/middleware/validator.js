@@ -9,7 +9,7 @@ class Validator{
 
         const blog = await blogData.findById(blogIdFromParams);
 
-        console.log(userIdFromToken)
+        console.log(blog)
         if(!blog){
             return res.status(404).json({
                 status:404,
@@ -31,6 +31,11 @@ class Validator{
     }
 
 
+/**
+ * Validate Inputs
+ * @body  data inputs 
+ * @return {Object} error description or Return Next middleware 
+ */
   static validateInput = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

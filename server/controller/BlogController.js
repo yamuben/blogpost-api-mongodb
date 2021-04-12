@@ -55,7 +55,7 @@ class BlogController {
 
     static getAllBlogs = async(req, res) => {
         const data = await blogData.find();
-        console.log(data)
+        // console.log(data)
         return res.status(200).json({
             status: 200,
             message: "this is all blogs",

@@ -1,29 +1,30 @@
 import {dataFromToken} from "../helpers/token";
 import userController from "../controller/AuthController";
 import userInfos from '../model/UserModel'
+import Response from "../helpers/response";
 
-export const verifyAuth = (req,res,next)=>{
+export const verifyAuth =async (req,res,next)=>{
 
     const token = req.header("x-auth-token");
     if(!token){
-        return res.status(404).json({
-            status:404,
-            errror: "No Token provided"
-        })
+        return Response.errorMessage(res, " Not token provided", 404)
     }
 
     try{
 
         const user = dataFromToken(token).payload;
     
-        const data = userInfos.findById(user.id)
-    
+        const data = await userInfos.findById(user.id)
+
+    console.log(data)
         if(!data){
-            return res.status(404).json({
-                status:404,
-                error:"you are not a user"
-            })
+            return Response.errorMessage(res,"Please provide true credentials", 404)
         }
+
+        if(user.passwordChangedTime != data.passwordChangedTime){
+            return Response.errorMessage(res,"Please re-Login, Password has been changed",404);
+        }
+
     // console.log(data)
         req.body.userId =user.id;
     
@@ -31,11 +32,10 @@ export const verifyAuth = (req,res,next)=>{
     
     
     }catch(e){
-        return res.status(404).send({
-            Status: 404,
-            Error: 'invalid token',
-    
-          });
+
+
+        return Response.errorMessage(res, "Invalid token", 404)
+
     }
 
 

@@ -23,7 +23,11 @@ const userSchema = new mongoose.Schema({
     },
     address: {type:String,
     default:"Rwanda"},
-    departement: String
+    departement: String,
+    passwordChangedTime:{
+        type:String,
+        default:Date.now()
+    }
 });
 
 const userinfo = mongoose.model("user",userSchema);
