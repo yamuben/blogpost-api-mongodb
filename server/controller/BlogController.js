@@ -1,30 +1,46 @@
 import blogData from "../model/blogModel";
+import axios from "axios";
+import Response from "../helpers/response";
 
 class BlogController {
 
-    static updateOneBlog= async(req,res)=>{
-        const blogId= req.params.id;
+    static getAllBlogsFromAPI = async (req, res) => {
+
+        try {
+            const responseFromAPI = await axios.get('https://blogpost-api-shecancode.herokuapp.com/api/v1/blog/dash/all');
+
+            // console.log(responseFromAPI)
+            return Response.successMessage(res,"fetched succesfully",responseFromAPI.data,200)
+        } catch (e) {
+            console.log(e)
+            return Response.errorMessage(res,"failed to fetch", 403)
+        }
+
+    }
+
+    static updateOneBlog = async (req, res) => {
+        const blogId = req.params.id;
         let {
             title,
             content,
-            
+
         } = req.body;
 
-        const blog =await blogData.findById(blogId)
-        if(!blog){
+        const blog = await blogData.findById(blogId)
+        if (!blog) {
             return res.status(404).json({
-                status:404,
-                message:"blog not found"
+                status: 404,
+                message: "blog not found"
             })
         }
 
-       await blogData.findByIdAndUpdate(blogId,req.body);
+        await blogData.findByIdAndUpdate(blogId, req.body);
 
         const data = await blogData.findById(blogId);
 
         return res.status(200).json({
-            status:200,
-            message:"blog updated succesfully",
+            status: 200,
+            message: "blog updated succesfully",
             data
         })
 
@@ -32,12 +48,12 @@ class BlogController {
 
     }
 
-    static deleteOneBlog=async(req,res)=>{
-        const blogId= req.params.id;
+    static deleteOneBlog = async (req, res) => {
+        const blogId = req.params.id;
 
         await blogData.findByIdAndDelete(blogId)
         const data = await blogData.findById(blogId)
-       
+
         if (!data) {
             return res.status(200).json({
                 status: 200,
@@ -53,7 +69,7 @@ class BlogController {
         })
     }
 
-    static getAllBlogs = async(req, res) => {
+    static getAllBlogs = async (req, res) => {
         const data = await blogData.find();
         // console.log(data)
         return res.status(200).json({
@@ -63,7 +79,7 @@ class BlogController {
         });
     }
 
-    static getOneBlog = async(req, res) => {
+    static getOneBlog = async (req, res) => {
 
         const blogId = req.params.id;
 
@@ -83,19 +99,19 @@ class BlogController {
         })
     }
 
-    static createBlog =async (req, res) => {
-  
+    static createBlog = async (req, res) => {
+
         const timeStamp = new Date(Date.now());
         let {
             title,
             content,
-            
+
         } = req.body;
 
-      req.body.timeStamp=timeStamp;
+        req.body.timeStamp = timeStamp;
 
 
-        const data =await  blogData.create(req.body)
+        const data = await blogData.create(req.body)
 
         if (!data) {
             return res.status(417).json({
@@ -103,12 +119,12 @@ class BlogController {
                 message: "blog  failed to be registered",
             })
         }
-        console.log("create: ",data)
+        console.log("create: ", data)
 
         return res.status(201).json({
             status: 201,
             message: "blog  created succesfully",
-            data:data._doc
+            data: data._doc
         })
 
 
