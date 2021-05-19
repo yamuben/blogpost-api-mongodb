@@ -2,6 +2,7 @@ import express from "express";
 import bodyParse from "body-parser";
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import cors from 'cors';
 
 import authRouter from './server/routes/AuthRoute';
 import blogRouter from './server/routes/BlogRoute';
@@ -11,7 +12,7 @@ dotenv.config({path:'./.env'});
 
 const app = express();
 
-
+app.use(cors);
 app.use(bodyParse.json());
 
 app.use('/api/v1/blog',authRouter);
