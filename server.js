@@ -12,7 +12,7 @@ dotenv.config({path:'./.env'});
 
 const app = express();
 
-app.use(cors);
+app.use(cors());
 app.use(bodyParse.json());
 
 app.use('/api/v1/blog',authRouter);
