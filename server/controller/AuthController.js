@@ -92,7 +92,7 @@ class UserController {
         else {
             let { password, ...userData } = data._doc;
 
-            await  EmailHelper.userWelcomeEmail(req,userData);
+//             await  EmailHelper.userWelcomeEmail(req,userData);
 
         return    Response.successMessage(res,"Account created succesfully",userData,201)
 
