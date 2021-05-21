@@ -9,7 +9,7 @@ const blogRouter = express.Router();
 blogRouter.post('/create',verifyAuth, BlogController.createBlog);
 blogRouter.get('/getallfromapi',BlogController.getAllBlogsFromAPI);
 blogRouter.get('/all',BlogController.getAllBlogs);
-blogRouter.get('/:id',verifyAuth, BlogController.getOneBlog)
+blogRouter.get('/:id', BlogController.getOneBlog)
 blogRouter.delete('/:id',verifyAuth,Validator.verifyAccess,BlogController.deleteOneBlog)
 blogRouter.patch('/:id',verifyAuth,Validator.verifyAccess,BlogController.updateOneBlog)
 
