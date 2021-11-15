@@ -111,7 +111,7 @@ class BlogController {
         req.body.timeStamp = timeStamp;
 
 
-        const data = await blogData.create(req.body)
+        const data = await blogData.create(req.body);
 
         if (!data) {
             return res.status(417).json({
@@ -119,7 +119,7 @@ class BlogController {
                 message: "blog  failed to be registered",
             })
         }
-        console.log("create: ", data)
+        // console.log("create: ", data)
 
         return res.status(201).json({
             status: 201,

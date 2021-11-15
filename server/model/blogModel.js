@@ -6,6 +6,7 @@ const blogSchema = new mongoose.Schema({
         type: String,
         required: [true, "title is required"]
     },
+    photo:String,
     content: {
         type: String,
         required: [true, "content is required"]
